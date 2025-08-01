@@ -1,13 +1,12 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" :left="true" app>
+    <v-navigation-drawer color="sideBar" v-model="drawer" :right="false" app>
       <!-- Navegar opciones -->
       <v-list-item>
         <v-list-item-avatar>
-         
-          <v-avatar color="primary" size="40">AM</v-avatar>
+          <v-avatar color="userPhoto" size="40">AM</v-avatar>
         </v-list-item-avatar>
-
+        
         <v-list-item-content>
           <v-list-item-title>Usuario invitado</v-list-item-title>
         </v-list-item-content>
@@ -18,14 +17,14 @@
       <v-list dense>
         <v-list-item v-for="(item, index) in items" :key="index" @click="selectRoute(item.path)">
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon color="baseColor">{{ item.icon }}</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item-title >{{ item.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app>
+    <v-app-bar color="baseColor" dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>ATM IntelliFastCash</v-toolbar-title>
@@ -35,15 +34,17 @@
       <!--  -->
       <router-view />
     </v-main>
+    <footer-view />
   </v-app>
 </template>
 
 <script>
+import FooterView from './views/footer-view.vue';
 
 export default {
   name: "App",
   components: {
-
+    FooterView
   },
   data() {
     return {
@@ -56,7 +57,11 @@ export default {
   },
   methods: {
     selectRoute(route) {
-      this.$router.push(route);
+      this.$router.push(route).catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error(err);
+        }
+      });
     },
   },
 };
