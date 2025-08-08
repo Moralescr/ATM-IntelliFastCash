@@ -15,40 +15,39 @@
                         <span class="text-h6">Crear transacción</span>
                     </v-card-title>
                 </v-system-bar>
-                <v-form @submit.prevent="createTransaction()">
+                <v-form ref="form" v-model="valid">
                     <v-card-text>
                         <v-container>
                             <v-row>
                                 <v-col cols="12">
                                     <v-select v-model="trxType" label="Tipo de transacción" :items="trxTypes"
-                                        required></v-select>
+                                        :rules="trxTypeRules" required></v-select>
                                 </v-col>
-                                <v-col v-if="!showDestinyAccount" cols="12">
+                                <v-col v-if="!showDestinationAccount" cols="12">
                                     <v-text-field v-model="trxAmount" label="Monto de la transacción" type="number"
-                                        placeholder="ej. $20" required></v-text-field>
+                                        placeholder="ej. $20" :rules="trxAmountRules" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-select v-model="trxCurrency" label="Tipo de moneda" :items="currecyTypes"
-                                        required></v-select>
+                                        :rules="trxCurrencyRules"></v-select>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-select v-model="trxSourceAccount" label="Tarjeta o cuenta origen"
-                                        :items="cardNumbers" required></v-select>
+                                        :items="cardNumbers" :rules="trxSourceAccountRules"></v-select>
                                 </v-col>
-                                <v-col v-if="showDestinyAccount" cols="12">
+                                <v-col v-if="showDestinationAccount" cols="12">
                                     <v-select v-model="trxDestinationAccount" label="Cuenta destino"
-                                        :items="accountNumbers" required></v-select>
+                                        :items="accountNumbers" :rules="destinationAccountRules"></v-select>
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <!--<small>*indicates required field</small>-->
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="danger" dark small @click="dialog = false">
+                        <v-btn color="danger" @click="closeDialog" dark small>
                             Cerrar
                         </v-btn>
-                        <v-btn type="submit" color="success" small dark @click="dialog = false">
+                        <v-btn color="success" @click="validateForm" small dark>
                             Guardar
                         </v-btn>
                     </v-card-actions>
@@ -65,7 +64,9 @@ export default {
 
     data() {
         return {
+            valid: false,
             dialog: false,
+            trxCreated: false,
             trxTypes: ['Retiro efectivo', 'Depósito', 'Pago de tarjeta'],
             currecyTypes: ['Dólares', 'Colones'],
             cardNumbers: ['4941906925121370', '5303150116100096'],
@@ -75,30 +76,68 @@ export default {
             trxAmount: 0,
             trxCurrency: '',
             trxSourceAccount: '',
-            trxDestinationAccount: '000000000000000000000',
+            trxDestinationAccount: '',
+            trxTypeRules: [
+                trxType => !!trxType || 'Tipo de transacción es requerido',
+            ],
+            trxAmountRules: [
+                trxAmount => !!trxAmount || 'El monto es requerido',
+                //trxAmount => trxAmount.length <= 12 || 'Máximo 12 digitos'
+            ],
+            trxCurrencyRules: [
+                trxCurrency => !!trxCurrency || 'La moneda es requerida',
+            ],
+            trxSourceAccountRules: [
+                trxSourceAccount => !!trxSourceAccount || 'La cuenta/tarjeta origen es requerida',
+            ],
         };
     },
-
-    mounted() {
-
-    },
-
     computed: {
-        showDestinyAccount() {
-            return this.trxType === 'Pago de tarjeta' || this.trxType === 'Depósito'; // Use trxType because is the user selection
+        showDestinationAccount() {
+            if (this.trxType === 'Pago de tarjeta' || this.trxType === 'Depósito') {
+                return true;
+            }
+            return false;
+            //return this.trxType === 'Pago de tarjeta' || this.trxType === 'Depósito'; // Use trxType because is the user selection
         },
+        // Validate field value to Account destination when this is visible 
+        destinationAccountRules() {
+            return [
+                value => {
+                    if (!this.showDestinationAccount) return true;
+                    return !!value || 'La cuenta destino es requerida';
+                }
+            ]
+        }
     },
-
     watch: {
         trxType(transaction) {
             if (transaction !== 'Pago de tarjeta' || transaction !== 'Depósito') {
-                this.trxDestinationAccount = '000000000000000000000'; // Initialize value
+                // Reset values
+                this.trxDestinationAccount = '';
+                this.trxAmount = 0;
             }
         },
     },
-
-    methods: {
-        createTransaction() {
+    methods: { 
+        closeDialog() {
+            this.dialog = false;
+            this.$nextTick(() => {
+                this.$refs.form.reset()
+                this.$refs.form.resetValidation();
+            })
+        },
+        validateForm() {
+            if (this.$refs.form.validate()) {
+                this.createTransaction();              // Call API to create transaction
+                this.closeDialog();                    // Close dialog form 
+                this.$nextTick(() => {
+                    this.$refs.form.reset();           // Clear form field values 
+                    this.$refs.form.resetValidation(); // Clear form validations messsages
+                })
+            }
+        },
+        async createTransaction() {
             // Set default data
             let vTrxCode = '';
             let vOperationCode = '';
@@ -119,7 +158,7 @@ export default {
             } else {
                 vTrxCode = '20001Q'; //Card Payment
                 vOperationCode = '    GCAA';
-                vDescription = 'Pago de tarjeta ATM';
+                vDescription = 'Pago tarjeta ATM';
             }
 
             // Set currency code 
@@ -145,22 +184,17 @@ export default {
                 "VREC_": "S",
                 "VPAGTAR_": " "
             };
-            console.log("DATOS:", datos);
+            try {
+                const response = await this.$axios.post(url, datos);
+                if (response.status == 200){
+                    this.trxCreated = true;
+                }
+                this.$emit('transaction-created', this.trxCreated);
+            } catch (error) {
+                this.$emit('transaction-created', this.trxCreated);
+                console.log('Erroro:', error);
+            }
 
-            this.$axios.post(url, datos).then(response => {
-                //Get response
-                console.log('RESPONSE: ', response);
-                this.resetForm();
-                this.$emit('transaction-created'); //Send event to show the trx list: Transaction was created
-            });
-        },
-
-        resetForm() {
-            this.trxType = '';
-            this.trxAmount = 0;
-            this.trxCurrency = '';
-            this.trxSourceAccount = '';
-            this.trxDestinationAccount = '000000000000000000000';
         },
 
     },
