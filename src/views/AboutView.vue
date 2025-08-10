@@ -17,7 +17,7 @@
         <li>✔ Pagos de tarjetas ATM</li>
       </ul>
       <p class="mission">
-        Versión 1.0
+        Versión 0.1.0
       </p>
     </div>
   </section>
