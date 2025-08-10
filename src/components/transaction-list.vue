@@ -11,6 +11,20 @@
                 :timeout="3000" />
             <!--End Alerts-->
         </div>
+        <!-- Loading State -->
+        <v-row v-if="isLoading" class="pa-3">
+            <v-col cols="12" class="text-center">
+                <v-progress-circular indeterminate color="primary" size="20"></v-progress-circular>
+            </v-col>
+        </v-row>
+        <!-- No Transactions State -->
+        <v-row v-else-if="transactionsList.length === 0" class="pa-3">
+            <v-col cols="12" class="text-center">
+                <v-alert type="info">
+                    No hay transacciones disponibles
+                </v-alert>
+            </v-col>
+        </v-row>
         <v-row class="pa-3">
             <v-col v-for="trx in transactionsList" :key="trx.key" cols="12" sm="4" md="3">
                 <v-card :elevation="6" outlined shaped>
@@ -41,7 +55,7 @@
             </v-col>
         </v-row>
         <!--Begin transaction detail-->
-        <transaction-detail v-if="selectedTransaction" :transaction="selectedTransaction" @closed="closeDialog"/>
+        <transaction-detail v-if="selectedTransaction" :transaction="selectedTransaction" @closed="closeDialog" />
         <!--Begin transaction detail-->
     </v-container>
 </template>
@@ -62,6 +76,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             transactionsList: [],
             selectedTransaction: null,
             userName: '',
@@ -70,12 +85,13 @@ export default {
             snackbarColor: ''
         };
     },
-    computed:{
+    computed: {
     },
     mounted() {
         //Refresh data 
         this.interval = setInterval(() => {
             this.showTransactions();
+            this.isLoading = false;
         }, 5000)
     },
     beforeDestroy() {
@@ -90,6 +106,7 @@ export default {
         parseAmount,
         parseDate,
         async showTransactions() {
+            this.isLoading = true;
             let url = "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2893";
             let datos = { VUSER: '50684043853        17a86be379c4' };
             try {
@@ -102,6 +119,8 @@ export default {
                 this.transactionsList = JSON.parse(jsonString);
             } catch (error) {
                 console.log(error);
+            } finally {
+                this.isLoading = false;
             }
         },
         getCreateTrxResponse(trxCreated) {
@@ -116,7 +135,7 @@ export default {
             // Refresh transactions list
             this.showTransactions();
         },
-        closeDialog(){
+        closeDialog() {
             // Reset transaction selected when tah dialog was closed
             this.selectedTransaction = null;
         },
