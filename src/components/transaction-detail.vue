@@ -20,7 +20,7 @@
                             </p>
                             <p class="mb-2">
                                 <strong>Fecha expiración:</strong>
-                                {{ formatDate(transaction.exp) }}
+                                {{ parseDate(transaction.exp) }}
                             </p>
                             <p class="mb-2">
                                 <strong>Monto:</strong>
@@ -29,7 +29,7 @@
                             <p class="">
                                 <strong>Estado: </strong>
                                 <v-chip :color="statusColor" small dark>{{ getStatusText(transaction.sts)
-                                }}</v-chip>
+                                    }}</v-chip>
                             </p>
                         </v-col>
                     </v-row>
@@ -49,6 +49,7 @@
 <script>
 
 import QRCode from 'qrcode';
+import { getStatusColor, getStatusText, parseAmount, parseDate } from '@/js/parseData';
 
 export default {
     name: 'TransactionDetail',
@@ -69,19 +70,15 @@ export default {
         this.showDetails(this.transaction);
     },
     methods: {
+        getStatusText,
+        parseAmount,
+        parseDate,
         //Show transaction detail
         showDetails(trx) {
             this.qrCodeUrl = trx.key;
             this.dialog = true;
             this.generateQR(trx.key);
-            //Change chip color 
-            if (trx.sts === '0') {
-                this.statusColor = 'success';
-            } else if (trx.sts === '4') {
-                this.statusColor = 'danger';
-            } else if (trx.sts === '6') {
-                this.statusColor = 'primary';
-            }
+            this.statusColor = getStatusColor(trx.sts); //get status color
         },
         //Api to generate QR code (transaction key)
         async generateQR(transactionKey) {
@@ -116,42 +113,6 @@ export default {
         closeDialog() {
             this.dialog = false;
             this.$emit('closed');
-        },
-        parseAmount(amount, currency) {
-            let amountParse;
-            if (currency === '188') {
-                amountParse = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(amount / 100);
-            } else {
-                amountParse = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount / 100);
-            }
-            return amountParse;
-        },
-        //Transaction status
-        getStatusText(status) {
-            switch (status) {
-                case '0':
-                    return 'Pendiente';
-                case '1':
-                    return 'En uso';
-                case '2':
-                    return 'Cancelada';
-                case '3':
-                    return 'Enviada';
-                case '4':
-                    return 'Expirada';
-                case '5':
-                    return 'Pendiente o en uso';
-                case '6':
-                    return 'Usada';
-                default:
-                    return 'Desconocida';
-            }
-        },
-        formatDate(dateToFormat) {
-            const [fechaStr] = dateToFormat.split(' ');        // "25/07/31"
-            const [yy, mm, dd] = fechaStr.split('/');          // separa en partes
-            const year = `20${yy}`;                            // convierte "25" → "2025"
-            return `${dd}/${mm}/${year}`;                      // arma "31/07/2025"
         },
     }
 }

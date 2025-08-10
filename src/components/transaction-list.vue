@@ -11,16 +11,17 @@
                 :timeout="3000" />
             <!--End Alerts-->
         </div>
-        <v-row justify="center">
-            <v-col v-for="trx in transactionsList" :key="trx.key" cols="12" sm="6" md="4">
-                <v-card :elevation="6" max-width="344" outlined shaped>
+        <v-row class="pa-3">
+            <v-col v-for="trx in transactionsList" :key="trx.key" cols="12" sm="4" md="3">
+                <v-card :elevation="6" outlined shaped>
                     <v-list-item four-line>
                         <v-list-item-content>
                             <v-list-item-title class="text-h5 mb-2 mt-2">
                                 {{ trx.dsc }}
                             </v-list-item-title>
                             <v-list-item-subtitle>
-                                <p class="mb-2"><strong>Fecha creación:</strong> {{ formatDate(trx.cre) }}</p>
+                                <p class="mb-2"><strong>Fecha creación:</strong> {{ parseDate(trx.cre) }}</p>
+                                <p class="mb-2"><strong>Fecha expiración:</strong> {{ parseDate(trx.exp) }}</p>
                                 <p class="mb-2"><strong>Monto:</strong> {{ parseAmount(trx.mnt, trx.cur) }}</p>
                                 <p class="mb-1"><strong>Estado:</strong> {{ getStatusText(trx.sts) }}</p>
                             </v-list-item-subtitle>
@@ -50,6 +51,7 @@
 import CreateTransaction from './create-transaction.vue';
 import appSnackBar from './app-snack-bar.vue';
 import TransactionDetail from './transaction-detail.vue';
+import { getStatusText, parseAmount, parseDate } from '@/js/parseData';
 
 export default {
     name: "TransactionsList",
@@ -68,6 +70,8 @@ export default {
             snackbarColor: ''
         };
     },
+    computed:{
+    },
     mounted() {
         //Refresh data 
         this.interval = setInterval(() => {
@@ -82,6 +86,9 @@ export default {
         this.showTransactions();
     },
     methods: {
+        getStatusText,
+        parseAmount,
+        parseDate,
         async showTransactions() {
             let url = "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2893";
             let datos = { VUSER: '50684043853        17a86be379c4' };
@@ -112,42 +119,6 @@ export default {
         closeDialog(){
             // Reset transaction selected when tah dialog was closed
             this.selectedTransaction = null;
-        },
-        //Transaction status
-        getStatusText(status) {
-            switch (status) {
-                case '0':
-                    return 'Pendiente';
-                case '1':
-                    return 'En uso';
-                case '2':
-                    return 'Cancelada';
-                case '3':
-                    return 'Enviada';
-                case '4':
-                    return 'Expirada';
-                case '5':
-                    return 'Pendiente o en uso';
-                case '6':
-                    return 'Usada';
-                default:
-                    return 'Desconocida';
-            }
-        },
-        parseAmount(amount, currency) {
-            let amountParse;
-            if (currency === '188') {
-                amountParse = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(amount / 100);
-            } else {
-                amountParse = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount / 100);
-            }
-            return amountParse;
-        },
-        formatDate(dateToFormat) {
-            const [fechaStr] = dateToFormat.split(' ');      // "25/07/31"
-            const [yy, mm, dd] = fechaStr.split('/');          // separa en partes
-            const year = `20${yy}`;                            // convierte "25" → "2025"
-            return `${dd}/${mm}/${year}`;                      // arma "31/07/2025"
         },
     },
 }
