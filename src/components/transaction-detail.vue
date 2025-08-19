@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-dialog v-model="dialog" max-width="600">
+        <v-dialog v-model="dialog" @input="onDialogChange" max-width="600">
             <v-card>
                 <v-system-bar class="pt-6 pb-6" color="baseColor" dark>
                     <v-card-title>
@@ -17,6 +17,10 @@
                             <p class="mb-2">
                                 <strong>One Time Password (OTP):</strong>
                                 {{ transaction.otp }}
+                            </p>
+                            <p class="mb-2">
+                                <strong>Fecha creación:</strong>
+                                {{ parseDate(transaction.cre) }}
                             </p>
                             <p class="mb-2">
                                 <strong>Fecha expiración:</strong>
@@ -113,6 +117,11 @@ export default {
         closeDialog() {
             this.dialog = false;
             this.$emit('closed');
+        },
+        onDialogChange(val) {
+            if (!val) {
+                this.$emit('closed');
+            }
         },
     }
 }
