@@ -26,11 +26,46 @@
       </v-col>
     </v-row>
     <!-- No Transactions State -->
+    <!--
     <v-row v-else-if="transactionsList.length === 0" class="pa-3">
       <v-col cols="12" class="text-center">
         <v-alert type="info"> No hay transacciones disponibles </v-alert>
       </v-col>
     </v-row>
+    -->
+    <v-row>
+      <v-col v-for="n in 6" :key="n" cols="12" sm="6">
+        <!-- Flex column para empujar el botón abajo -->
+        <v-card class="d-flex flex-column" :elevation="6" height="200" shaped>
+          <v-list-item class="flex-grow-1">
+            <v-list-item-content>
+              <v-list-item-title class="text-h5 mt-2">
+                Retiro efectivo ATM
+              </v-list-item-title>
+              <v-row>
+                <v-col cols="12" md="6" class="d-flex flex-column pb-0">
+                  <p class="mb-1"><strong>Creación:</strong> 10/05/2025</p>
+                  <p class="mb-1"><strong>Expiración:</strong> 10/05/2025</p>
+                  <p class="mb-1"><strong>Monto:</strong> $2000</p>
+                  <p class="mb-1"><strong>Estado:</strong> Pendiente</p>
+                </v-col>
+              </v-row>
+            </v-list-item-content>
+            <v-list-item-avatar rounded size="100" color="sideBar">
+              <v-icon color="baseColor" x-large dark>mdi-cash-fast</v-icon>
+            </v-list-item-avatar>
+          </v-list-item>
+          <!-- El botón siempre queda abajo -->
+          <v-card-actions class="mt-auto ml-2 mb-2">
+            <v-btn color="primary" small @click="selectedTransaction = trx">
+              Detalles
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!--
     <v-row class="pa-3">
       <v-col
         v-for="trx in transactionsList"
@@ -71,7 +106,7 @@
           </v-card-actions>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
     <!--Begin transaction detail-->
     <transaction-detail
       v-if="selectedTransaction"
