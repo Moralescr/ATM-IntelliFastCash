@@ -7,6 +7,13 @@ import router from './router'
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios; //Global axios
 
+// Set tab "title"
+router.afterEach((to) => {
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
+});
+
 new Vue({
   vuetify,
   router,

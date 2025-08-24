@@ -180,11 +180,11 @@ export default {
       } else if (this.trxType === "Depósito") {
         vTrxCode = "21001Q"; //Deposit
         vOperationCode = "    GBAB";
-        vDescription = "Depósito ATM";
+        vDescription = "Depósito";
       } else {
         vTrxCode = "20001Q"; //Card Payment
         vOperationCode = "    GCAA";
-        vDescription = "Pago tarjeta ATM";
+        vDescription = "Pago tarjeta";
       }
 
       // Set currency code

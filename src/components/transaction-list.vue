@@ -7,112 +7,62 @@
       <!--End create transaction form-->
       <v-divider />
       <!--Begin Alerts-->
-      <app-snack-bar
-        v-model="snackbarVisible"
-        :message="snackbarMessage"
-        :color="snackbarColor"
-        :timeout="3000"
-      />
+      <app-snack-bar v-model="snackbarVisible" :message="snackbarMessage" :color="snackbarColor" :timeout="3000" />
       <!--End Alerts-->
     </div>
     <!-- Loading State -->
     <v-row v-if="isLoading" class="pa-3">
       <v-col cols="12" class="text-center">
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="20"
-        ></v-progress-circular>
+        <v-progress-circular indeterminate color="primary" size="20"></v-progress-circular>
       </v-col>
     </v-row>
     <!-- No Transactions State -->
-    <!--
     <v-row v-else-if="transactionsList.length === 0" class="pa-3">
       <v-col cols="12" class="text-center">
         <v-alert type="info"> No hay transacciones disponibles </v-alert>
       </v-col>
     </v-row>
-    -->
     <v-row>
-      <v-col v-for="n in 6" :key="n" cols="12" sm="6">
-        <!-- Flex column para empujar el botón abajo -->
-        <v-card class="d-flex flex-column" :elevation="6" height="200" shaped>
-          <v-list-item class="flex-grow-1">
-            <v-list-item-content>
-              <v-list-item-title class="text-h5 mt-2">
-                Retiro efectivo ATM
-              </v-list-item-title>
-              <v-row>
-                <v-col cols="12" md="6" class="d-flex flex-column pb-0">
-                  <p class="mb-1"><strong>Creación:</strong> 10/05/2025</p>
-                  <p class="mb-1"><strong>Expiración:</strong> 10/05/2025</p>
-                  <p class="mb-1"><strong>Monto:</strong> $2000</p>
-                  <p class="mb-1"><strong>Estado:</strong> Pendiente</p>
-                </v-col>
-              </v-row>
-            </v-list-item-content>
-            <v-list-item-avatar rounded size="100" color="sideBar">
-              <v-icon color="baseColor" x-large dark>mdi-cash-fast</v-icon>
-            </v-list-item-avatar>
-          </v-list-item>
-          <!-- El botón siempre queda abajo -->
-          <v-card-actions class="mt-auto ml-2 mb-2">
-            <v-btn color="primary" small @click="selectedTransaction = trx">
+      <v-col v-for="trx in transactionsList" :key="trx.key" cols="12" sm="6" md="4" lg="3">
+        <v-card class="elevation-6" shaped>
+          <!-- Title -->
+          <v-card-title class="title px-4">
+            <div class="text-h5 font-weight-bold">
+              <v-badge :color="getStatusColor(trx.sts)" dot>
+                {{ trx.dsc }}
+              </v-badge>
+
+            </div>
+          </v-card-title>
+          <!-- Content -->
+          <v-card-text class="px-4">
+            <div class="mt-3 mb-1 text-body-2">
+              <strong>Creación:</strong> 
+              {{ parseDate(trx.cre) }}
+            </div>
+            <div class="mb-0 mb-1 text-body-2">
+              <strong>Monto:</strong> 
+              {{ parseAmount(trx.mnt, trx.cur) }}
+            </div>
+            <div class="mb-0 text-body-2">
+              <strong>Estado: </strong>
+              {{ getStatusText(trx.sts) }}
+            </div>
+          </v-card-text>
+          <!-- Actions -->
+          <v-card-actions class="px-4 py-4 pt-0">
+            <v-btn color="primary" variant="flat" small @click="selectedTransaction = trx">
               Detalles
+            </v-btn>
+            <v-btn color="error" variant="flat" small>
+              Cancelar
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-
-    <!--
-    <v-row class="pa-3">
-      <v-col
-        v-for="trx in transactionsList"
-        :key="trx.key"
-        cols="12"
-        sm="4"
-        md="3"
-      >
-        <v-card :elevation="6" outlined shaped>
-          <v-list-item four-line>
-            <v-list-item-content>
-              <v-list-item-title class="text-h5 mb-2 mt-2">
-                {{ trx.dsc }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                <p class="mb-2">
-                  <strong>Fecha creación:</strong> {{ parseDate(trx.cre) }}
-                </p>
-                <p class="mb-2">
-                  <strong>Fecha expiración:</strong> {{ parseDate(trx.exp) }}
-                </p>
-                <p class="mb-2">
-                  <strong>Monto:</strong> {{ parseAmount(trx.mnt, trx.cur) }}
-                </p>
-                <p class="mb-1">
-                  <strong>Estado:</strong> {{ getStatusText(trx.sts) }}
-                </p>
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-avatar rounded size="80" color="sideBar">
-              <v-icon color="baseColor" x-large dark> mdi-cash-fast </v-icon>
-            </v-list-item-avatar>
-          </v-list-item>
-          <v-card-actions class="mb-2 pl-4">
-            <v-btn color="primary" small @click="selectedTransaction = trx">
-              Detalles
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row> -->
     <!--Begin transaction detail-->
-    <transaction-detail
-      v-if="selectedTransaction"
-      :transaction="selectedTransaction"
-      @closed="closeDialog"
-    />
+    <transaction-detail v-if="selectedTransaction" :transaction="selectedTransaction" @closed="closeDialog" />
     <!--Begin transaction detail-->
   </v-container>
 </template>
@@ -122,7 +72,7 @@
 import CreateTransaction from "./create-transaction.vue";
 import appSnackBar from "./app-snack-bar.vue";
 import TransactionDetail from "./transaction-detail.vue";
-import { getStatusText, parseAmount, parseDate } from "@/js/parseData";
+import { getStatusColor, getStatusText, parseAmount, parseDate } from "@/js/parseData";
 
 export default {
   name: "TransactionsList",
@@ -159,6 +109,7 @@ export default {
   },
   methods: {
     getStatusText,
+    getStatusColor,
     parseAmount,
     parseDate,
     async showTransactions() {
@@ -200,7 +151,8 @@ export default {
 };
 </script>
 <style scoped>
-.border {
-  border: 1px solid #e0f2f1;
+.title {
+  background-color: #E0F2F1;
+  -webkit-text-fill-color: #455A64;
 }
 </style>

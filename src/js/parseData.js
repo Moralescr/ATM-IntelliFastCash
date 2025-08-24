@@ -42,9 +42,9 @@ function getStatusText(statusNumber) {
 function parseAmount(amount, currency) {
   let amountParse;
   if (currency === '188') {
-    amountParse = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(amount / 100);
+    amountParse = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 }).format(amount / 100);
   } else {
-    amountParse = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount / 100);
+    amountParse = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount / 100);
   }
   return amountParse;
 }

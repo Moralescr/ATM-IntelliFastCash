@@ -9,12 +9,14 @@ const routes = [
   {
     path: '/',
     name: 'TransactionsList',
-    component: TransactionsList
+    component: TransactionsList,
+    meta: { title: "Inicio" }
   },
   {
     path: '/about',
     name: 'About',
-    component: AboutView
+    component: AboutView,
+     meta: { title: "About" }
   }
 ]
 
