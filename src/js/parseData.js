@@ -65,7 +65,7 @@ function parseDate(dateToFormat) {
 /*
 @Parms
   @status
-  @Return statuColor
+  @Return statusColor
 */
 
 function getStatusColor(status) {

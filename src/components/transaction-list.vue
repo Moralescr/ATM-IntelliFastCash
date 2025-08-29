@@ -26,22 +26,20 @@
       <v-col v-for="trx in transactionsList" :key="trx.key" cols="12" sm="6" md="4" lg="3">
         <v-card class="elevation-6" shaped>
           <!-- Title -->
-          <v-card-title class="title px-4">
+          <v-card-title class="title px-4" :style="{ backgroundColor: setTitleColor(trx.sts) }">
+            <v-icon class="mr-2" x-large>mdi-cash-fast</v-icon>
             <div class="text-h5 font-weight-bold">
-              <v-badge :color="getStatusColor(trx.sts)" dot>
-                {{ trx.dsc }}
-              </v-badge>
-
+              {{ trx.dsc }}
             </div>
           </v-card-title>
           <!-- Content -->
           <v-card-text class="px-4">
             <div class="mt-3 mb-1 text-body-2">
-              <strong>Creación:</strong> 
+              <strong>Creación:</strong>
               {{ parseDate(trx.cre) }}
             </div>
             <div class="mb-0 mb-1 text-body-2">
-              <strong>Monto:</strong> 
+              <strong>Monto:</strong>
               {{ parseAmount(trx.mnt, trx.cur) }}
             </div>
             <div class="mb-0 text-body-2">
@@ -72,7 +70,7 @@
 import CreateTransaction from "./create-transaction.vue";
 import appSnackBar from "./app-snack-bar.vue";
 import TransactionDetail from "./transaction-detail.vue";
-import { getStatusColor, getStatusText, parseAmount, parseDate } from "@/js/parseData";
+import { getStatusText, parseAmount, parseDate } from "@/js/parseData";
 
 export default {
   name: "TransactionsList",
@@ -109,7 +107,6 @@ export default {
   },
   methods: {
     getStatusText,
-    getStatusColor,
     parseAmount,
     parseDate,
     async showTransactions() {
@@ -143,6 +140,23 @@ export default {
       // Refresh transactions list
       this.showTransactions();
     },
+    setTitleColor(status) {
+      let titleColor = '';
+      switch (status) {
+        case '0':
+          titleColor = '#B2DFDB'; //Pending
+          break;
+        case '4':
+          titleColor = '#FFCDD2'; //Expired
+          break;
+        case '6':
+          titleColor = '#BBDEFB'; //Used
+          break;
+        default:
+          titleColor = '#CFD8DC'; //Default
+      }
+      return titleColor;
+    },
     closeDialog() {
       // Reset transaction selected when tah dialog was closed
       this.selectedTransaction = null;
@@ -152,7 +166,6 @@ export default {
 </script>
 <style scoped>
 .title {
-  background-color: #E0F2F1;
   -webkit-text-fill-color: #455A64;
 }
 </style>
