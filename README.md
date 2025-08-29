@@ -32,19 +32,20 @@ https://intellifastcash.netlify.app/
 
 ### Lista de transacciones
 
-<img width="1900" height="941" alt="Image" src="https://github.com/user-attachments/assets/78d2d5b6-22ee-4877-992e-0f4234eb9d18" />
+<img width="1900" height="942" alt="Image" src="https://github.com/user-attachments/assets/d5109f2c-23d2-4271-ba0c-1dde63f77e5d" />
 
 ### Crear transacción 
 
-<img width="1901" height="940" alt="Image" src="https://github.com/user-attachments/assets/f3dfff3c-b666-4d0d-b44b-5ff9bc4a531d" />
+<img width="1649" height="938" alt="Image" src="https://github.com/user-attachments/assets/44f6f171-b0f5-4e59-abc3-5c825562d3e7" />
 
 ### Detalle de la transacción
 
-<img width="1898" height="940" alt="Image" src="https://github.com/user-attachments/assets/bffda1af-fd56-4560-8dca-73c8a2dddf4a" />
+<img width="1904" height="940" alt="Image" src="https://github.com/user-attachments/assets/6ff6f7b7-1595-4689-bdcc-25fab1606f79" />
 
-### Vista desde teléfono 
+### Vista desde móvil 
 
-<img width="486" height="886" alt="Image" src="https://github.com/user-attachments/assets/95658758-8562-43ee-aaea-d4a0354d156d" />
+<img width="384" height="834" alt="Image" src="https://github.com/user-attachments/assets/a57384cf-55c1-41f9-9e68-c626977995c8" />
+
 
 
 
