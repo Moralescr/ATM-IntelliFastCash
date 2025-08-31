@@ -28,6 +28,8 @@ npm run build
 
 https://intellifastcash.netlify.app/
 
+> No se puede probar funcionalidad porque se necesita una VPN. 
+
 ## Screenshots
 
 ### Lista de transacciones
