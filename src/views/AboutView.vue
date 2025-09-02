@@ -10,7 +10,7 @@
         <h3 class="title">Funcionalidades</h3>
         <li>✔ Crea transacciones</li>
         <li>✔ Consulta detalles de la transacción</li>
-        <li>✔ Comparte código QR de la transsación</li>
+        <li>✔ Comparte código QR de la transacción</li>
         <h3 class="title">Transacciones soportadas</h3>
         <li>✔ Retiros ATM</li>
         <li>✔ Depósitos ATM</li>
