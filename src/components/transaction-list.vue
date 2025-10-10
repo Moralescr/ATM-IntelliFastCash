@@ -49,7 +49,8 @@
           </v-card-text>
           <!-- Actions -->
           <v-card-actions class="px-4 py-4 pt-0">
-            <v-btn color="primary" variant="flat" small @click="selectedTransaction = trx">
+            <v-btn :disabled="isButtonDisabled(trx.sts)" color="primary" variant="flat" small
+              @click="selectedTransaction = trx">
               Detalles
             </v-btn>
             <v-btn color="error" variant="flat" small>
@@ -88,6 +89,7 @@ export default {
       snackbarVisible: false,
       snackbarMessage: "",
       snackbarColor: "",
+      isDisabled: false,
     };
   },
   computed: {},
@@ -117,7 +119,7 @@ export default {
       try {
         const response = await this.$axios.post(url, datos);
         //Get transaction list
-        let trxString = response.data.VDATA.substr(0, 1967); // [{ "user": "moralescr", "password": "1234" }]
+        let trxString = response.data.VDATA.substr(0, 1967); // [{ "user": "user1", "password": "xyz" }]
         //Se cambian comillas simples por dobles y se agrega corchetes
         let jsonString = `[${trxString.replace(/'/g, '"')}]`;
         //Se parsea para convertir a formato JSON
@@ -160,6 +162,18 @@ export default {
     closeDialog() {
       // Reset transaction selected when tah dialog was closed
       this.selectedTransaction = null;
+    },
+    isButtonDisabled(stat) {
+      let isDisabled = false;
+      if (stat == 6) //Used
+      {
+        isDisabled = true;
+      }
+      else if (stat == 4) //Expired 
+      {
+        isDisabled = true;
+      }
+      return isDisabled;
     },
   },
 };
