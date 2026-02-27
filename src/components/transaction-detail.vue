@@ -1,6 +1,10 @@
 <template>
     <div>
         <v-dialog v-model="dialog" @input="onDialogChange" max-width="600">
+            <!--Begin Alerts-->
+            <app-snack-bar v-model="snackbarVisible" :message="snackbarMessage" :color="snackbarColor"
+                :timeout="3000" />
+            <!--End Alerts-->
             <v-card>
                 <v-system-bar class="pt-6 pb-6" color="baseColor" dark>
                     <v-card-title>
@@ -35,6 +39,11 @@
                                 <v-chip :color="statusColor" small dark>{{ getStatusText(transaction.sts)
                                     }}</v-chip>
                             </p>
+                            <p v-if="transaction.typ == '03'">
+                                <strong>Digite el código del ATM</strong>
+                                <v-otp-input v-model="otpCode" @finish="sendOtpCode($event, transaction.key)" length="4"
+                                    type="number"></v-otp-input>
+                            </p>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -54,9 +63,13 @@
 
 import QRCode from 'qrcode';
 import { getStatusColor, getStatusText, parseAmount, parseDate } from '@/js/parseData';
+import appSnackBar from "./app-snack-bar.vue";
 
 export default {
     name: 'TransactionDetail',
+    components: {
+        appSnackBar
+    },
     props: {
         transaction: {
             type: Object,
@@ -68,6 +81,10 @@ export default {
             dialog: false,
             qrCodeUrl: '',
             statusColor: '',
+            otpCode: '',
+            snackbarVisible: false,
+            snackbarMessage: '',
+            snackbarColor: '',
         }
     },
     mounted() {
@@ -121,6 +138,29 @@ export default {
         onDialogChange(val) {
             if (!val) {
                 this.$emit('closed');
+            }
+        },
+        async sendOtpCode(otpValue, qrCodeValue) {
+            const url =
+                "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2911";
+
+            let data = {
+                "VKEY": qrCodeValue,
+                "VCOD": otpValue
+            };
+            try {
+                const response = await this.$axios.post(url, data);
+                if (response.status == 200) {
+                    this.otpCode = '';
+                    this.snackbarVisible = true;
+                    this.snackbarColor = "success";
+                    this.snackbarMessage = "Código enviado exitosamente";
+                }
+            } catch (error) {
+                this.otpCode = '';
+                this.snackbarVisible = true;
+                this.snackbarColor = "danger";
+                this.snackbarMessage = error;
             }
         },
     }
