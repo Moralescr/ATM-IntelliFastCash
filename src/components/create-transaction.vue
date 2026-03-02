@@ -20,47 +20,24 @@
             <v-container>
               <v-row>
                 <v-col cols="12">
-                  <v-select
-                    v-model="trxType"
-                    label="Tipo de transacción"
-                    :items="trxTypes"
-                    :rules="trxTypeRules"
-                    required
-                  ></v-select>
+                  <v-select v-model="trxType" label="Tipo de transacción" :items="trxTypes" :rules="trxTypeRules"
+                    required></v-select>
                 </v-col>
                 <v-col v-if="!showDestinationAccount" cols="12">
-                  <v-text-field
-                    v-model="trxAmount"
-                    label="Monto de la transacción"
-                    type="number"
-                    placeholder="ej. $20"
-                    :rules="trxAmountRules"
-                    required
-                  ></v-text-field>
+                  <v-select v-model="trxAmount" label="Monto de la transacción" :items="trxAmountOptions"
+                    :rules="trxAmountRules" required></v-select>
                 </v-col>
                 <v-col cols="12">
-                  <v-select
-                    v-model="trxCurrency"
-                    label="Tipo de moneda"
-                    :items="currecyTypes"
-                    :rules="trxCurrencyRules"
-                  ></v-select>
+                  <v-select v-model="trxCurrency" label="Tipo de moneda" :items="currecyTypes"
+                    :rules="trxCurrencyRules"></v-select>
                 </v-col>
                 <v-col cols="12">
-                  <v-select
-                    v-model="trxSourceAccount"
-                    label="Tarjeta o cuenta origen"
-                    :items="cardNumbers"
-                    :rules="trxSourceAccountRules"
-                  ></v-select>
+                  <v-select v-model="trxSourceAccount" label="Tarjeta o cuenta origen" :items="cardNumbers"
+                    :rules="trxSourceAccountRules"></v-select>
                 </v-col>
                 <v-col v-if="showDestinationAccount" cols="12">
-                  <v-select
-                    v-model="trxDestinationAccount"
-                    label="Cuenta destino"
-                    :items="accountNumbers"
-                    :rules="destinationAccountRules"
-                  ></v-select>
+                  <v-select v-model="trxDestinationAccount" label="Cuenta destino" :items="accountNumbers"
+                    :rules="destinationAccountRules"></v-select>
                 </v-col>
               </v-row>
             </v-container>
@@ -97,6 +74,7 @@ export default {
       //Form variables
       trxType: "",
       trxAmount: 0,
+      trxAmountOptions: [5, 10, 20, 50],
       trxCurrency: "",
       trxSourceAccount: "",
       trxDestinationAccount: "",
