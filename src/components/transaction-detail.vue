@@ -141,8 +141,7 @@ export default {
             }
         },
         async sendOtpCode(otpValue, qrCodeValue) {
-            const url =
-                "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2911";
+            const url = `${process.env.VUE_APP_API_URL}/web/services/AZ2911`;
 
             let data = {
                 "VKEY": qrCodeValue,

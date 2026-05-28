@@ -173,8 +173,7 @@ export default {
       }
 
       // Web service date
-      let url =
-        "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2892";
+      let url = `${process.env.VUE_APP_API_URL}/web/services/AZ2892`;
       let datos = {
         VTRXCOD_: vTrxCode,
         VOPRCOD_: vOperationCode,

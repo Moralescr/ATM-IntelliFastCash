@@ -113,19 +113,32 @@ export default {
     parseDate,
     async showTransactions() {
       this.isLoading = true;
-      let url =
-        "https://systemnavigator.site.claipayments.com:13018/web/services/ATW2893";
+      let url = `${process.env.VUE_APP_API_URL}/web/services/AZ2893`;
       let datos = { VUSER: "50684043853        17a86be379c4" };
       try {
         const response = await this.$axios.post(url, datos);
-        //Get transaction list
-        let trxString = response.data.VDATA.substr(0, 1967); // [{ "user": "user1", "password": "xyz" }]
-        //Se cambian comillas simples por dobles y se agrega corchetes
-        let jsonString = `[${trxString.replace(/'/g, '"')}]`;
-        //Se parsea para convertir a formato JSON
+        console.log("HOLA", response);
+        
+        // Limpiamos espacios en blanco al inicio y al final
+        let rawData = response.data.VDATA.trim();
+        
+        // Si termina con una coma sobrante, la removemos
+        if (rawData.endsWith(',')) {
+          rawData = rawData.slice(0, -1);
+        }
+        
+        // Se cambian comillas simples por dobles y se agregan corchetes
+        let jsonString = `[${rawData.replace(/'/g, '"')}]`;
+        
+        // Limpieza de seguridad para eliminar cualquier coma antes de un cierre de corchete (ej: [...,])
+        jsonString = jsonString.replace(/,\s*\]/g, ']');
+        
+        // Se parsea para convertir a formato JSON
         this.transactionsList = JSON.parse(jsonString);
+        console.log("Transacciones cargadas:", this.transactionsList);
+        
       } catch (error) {
-        console.log(error);
+        console.log("Error al parsear o cargar:", error);
       } finally {
         this.isLoading = false;
       }
